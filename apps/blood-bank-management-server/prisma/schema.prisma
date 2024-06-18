@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Ward {
+  createdAt  DateTime   @default(now())
+  district   District?  @relation(fields: [districtId], references: [id])
+  districtId String?
+  hospitals  Hospital[]
+  id         String     @id @default(cuid())
+  updatedAt  DateTime   @updatedAt
+}
+
+model BloodDonation {
+  bloodType    EnumBloodDonationBloodType?
+  createdAt    DateTime                    @default(now())
+  donationDate DateTime?
+  donor        String?
+  id           String                      @id @default(cuid())
+  quantity     Int?
+  updatedAt    DateTime                    @updatedAt
+}
+
+model BloodRequest {
+  bloodType   EnumBloodRequestBloodType?
+  createdAt   DateTime                   @default(now())
+  fulfilled   Boolean?
+  id          String                     @id @default(cuid())
+  quantity    Int?
+  requestDate DateTime?
+  requester   String?
+  updatedAt   DateTime                   @updatedAt
+}
+
+model BloodTransfusion {
+  bloodType       EnumBloodTransfusionBloodType?
+  createdAt       DateTime                       @default(now())
+  facility        Facility?                      @relation(fields: [facilityId], references: [id])
+  facilityId      String?
+  id              String                         @id @default(cuid())
+  patient         String?
+  quantity        Int?
+  transfusionDate DateTime?
+  updatedAt       DateTime                       @updatedAt
+}
+
+model Hospital {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+  ward      Ward?    @relation(fields: [wardId], references: [id])
+  wardId    String?
+}
+
+model Facility {
+  address           String?
+  bloodTransfusions BloodTransfusion[]
+  contactNumber     String?
+  createdAt         DateTime               @default(now())
+  id                String                 @id @default(cuid())
+  name              String?
+  typeField         EnumFacilityTypeField?
+  updatedAt         DateTime               @updatedAt
+}
+
+model Region {
+  createdAt DateTime   @default(now())
+  districts District[]
+  id        String     @id @default(cuid())
+  updatedAt DateTime   @updatedAt
+}
+
+model District {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  region    Region?  @relation(fields: [regionId], references: [id])
+  regionId  String?
+  updatedAt DateTime @updatedAt
+  wards     Ward[]
+}
+
+model User {
+  createdAt DateTime          @default(now())
+  email     String?           @unique
+  firstName String?
+  id        String            @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime          @updatedAt
+  username  String            @unique
+  userType  EnumUserUserType?
+}
+
+enum EnumBloodDonationBloodType {
+  Option1
+}
+
+enum EnumBloodRequestBloodType {
+  Option1
+}
+
+enum EnumBloodTransfusionBloodType {
+  Option1
+}
+
+enum EnumFacilityTypeField {
+  Option1
+}
+
+enum EnumUserUserType {
+  Option1
+}
